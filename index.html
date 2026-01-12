@@ -33,6 +33,8 @@
             position: relative;
             perspective: 1500px;
             cursor: pointer;
+            z-index: 10;
+            /* Ensure on top of background video */
         }
 
         /* Instruction text */
@@ -341,7 +343,7 @@
         <div class="instruction">Chạm để mở thiệp</div>
     </div>
 
-    <video id="bgVideo" loop
+    <video id="bgVideo" loop playsinline webkit-playsinline
         style="position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -1; opacity: 0; transition: opacity 1s; object-fit: cover;">
         <source src="khmsn.mp4" type="video/mp4">
     </video>
