@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiệp Mời Sinh Nhật</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff9a9e;
+            --secondary-color: #fecfef;
+            --envelope-color: #ffecd2;
+            --envelope-shadow: rgba(0, 0, 0, 0.1);
+            --card-text-color: #555;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            font-family: 'Nunito', sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            perspective: 1500px;
+            cursor: pointer;
+        }
+
+        /* Instruction text */
+        .instruction {
+            position: absolute;
+            bottom: -60px;
+            width: 100%;
+            text-align: center;
+            color: #888;
+            font-size: 1.1rem;
+            opacity: 0.8;
+            transition: opacity 0.5s;
+            animation: bounce 2s infinite;
+        }
+
+        .container:hover .instruction {
+            opacity: 1;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Envelope Structure */
+        .envelope {
+            width: 350px;
+            height: 250px;
+            position: relative;
+            background-color: var(--envelope-color);
+            box-shadow: 0 15px 35px var(--envelope-shadow);
+            border-radius: 10px;
+            z-index: 10;
+            transition: transform 0.6s ease;
+            transform-style: preserve-3d;
+        }
+
+        .envelope:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Flap (Top triangle) */
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 175px solid transparent;
+            /* width / 2 */
+            border-right: 175px solid transparent;
+            border-top: 130px solid #ffdeeb;
+            /* Slightly darker/different shade */
+            transform-origin: top;
+            transition: transform 0.6s 0.4s ease-in-out, z-index 0.2s 0.4s;
+            z-index: 30;
+            filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.05));
+        }
+
+        /* Pocket (Bottom/Front part) */
+        .pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 175px solid transparent;
+            border-right: 175px solid transparent;
+            border-bottom: 140px solid #fff0f5;
+            z-index: 20;
+            border-radius: 0 0 10px 10px;
+        }
+
+        /* Sides to cover the card slightly better */
+        .pocket-sides {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 15;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .pocket-sides::before,
+        .pocket-sides::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border-top: 140px solid transparent;
+            border-bottom: 110px solid transparent;
+        }
+
+        .pocket-sides::before {
+            left: 0;
+            border-left: 175px solid #ffe4e9;
+        }
+
+        .pocket-sides::after {
+            right: 0;
+            border-right: 175px solid #ffe4e9;
+        }
+
+        /* The Letter / Card */
+        .card {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 310px;
+            height: 220px;
+            /* Slightly smaller than envelope */
+            background: #fff;
+            background-image: url('card-bg.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 5px;
+            transition: transform 0.8s 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.27), z-index 0s 0.6s;
+            z-index: 5;
+            /* Initially inside */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-content {
+            background: rgba(255, 255, 255, 0.85);
+            /* Readability layer */
+            padding: 15px;
+            border-radius: 10px;
+            width: 90%;
+            height: 85%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .card h1 {
+            font-family: 'Dancing Script', cursive;
+            color: #ff6b6b;
+            margin: 0;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: var(--card-text-color);
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+
+        .card .highlight {
+            font-weight: bold;
+            color: #d66;
+        }
+
+        /* Open State */
+        .container.open .flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+            /* Moves behind the card/envelope body */
+            transition: transform 0.6s ease-in-out, z-index 0s 0.3s;
+        }
+
+        .container.open .card {
+            transform: translateX(-50%) translateY(-150px) scale(1.1);
+            /* Slides up and scales slightly */
+            z-index: 25;
+            /* Moves in front of pocket */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transition: transform 0.8s 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55), box-shadow 0.8s 0.6s;
+        }
+
+        /* Mobile adjustment */
+        @media (max-width: 480px) {
+            .envelope {
+                width: 300px;
+                height: 215px;
+            }
+
+            .card {
+                width: 270px;
+                height: 190px;
+            }
+
+            .flap {
+                border-left-width: 150px;
+                border-right-width: 150px;
+                border-top-width: 110px;
+            }
+
+            .pocket {
+                border-left-width: 150px;
+                border-right-width: 150px;
+                border-bottom-width: 120px;
+            }
+
+            .pocket-sides::before {
+                border-left-width: 150px;
+            }
+
+            .pocket-sides::after {
+                border-right-width: 150px;
+            }
+
+            .container.open .card {
+                transform: translateX(-50%) translateY(-80px) scale(1.1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container" id="envelopeContainer">
+        <div class="envelope">
+            <div class="flap"></div>
+            <div class="pocket"></div>
+            <div class="pocket-sides"></div>
+
+            <div class="card">
+                <div class="card-content">
+                    <h1>Mời Sinh Nhật</h1>
+                    <p>Thân mời bạn đến dự tiệc sinh nhật vui vẻ!</p>
+                    <p class="highlight">Thời gian: 19:00, Chủ Nhật</p>
+                    <p>Tại nhà của Chi</p>
+                    <p>Mong bạn sẽ đến chung vui!</p>
+                </div>
+            </div>
+        </div>
+        <div class="instruction">Chạm để mở thiệp</div>
+    </div>
+
+    <script>
+        const container = document.getElementById('envelopeContainer');
+
+        container.addEventListener('click', () => {
+            container.classList.toggle('open');
+
+            const instruction = document.querySelector('.instruction');
+            if (container.classList.contains('open')) {
+                instruction.style.opacity = '0';
+                instruction.style.pointerEvents = 'none';
+
+                // Add some basic confetti effect (optional polish)
+                createConfetti();
+            } else {
+                instruction.style.opacity = '0.8';
+            }
+        });
+
+        function createConfetti() {
+            // Simple confetti burst
+            const colors = ['#ff9a9e', '#fecfef', '#a18cd1', '#fbc2eb'];
+            for (let i = 0; i < 30; i++) {
+                const conf = document.createElement('div');
+                conf.style.position = 'fixed';
+                conf.style.left = '50%';
+                conf.style.top = '50%';
+                conf.style.width = '8px';
+                conf.style.height = '8px';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.borderRadius = '50%';
+                conf.style.zIndex = '100';
+                conf.style.pointerEvents = 'none';
+                document.body.appendChild(conf);
+
+                // Random direction
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 2 + Math.random() * 5;
+                const tx = Math.cos(angle) * velocity * 50;
+                const ty = Math.sin(angle) * velocity * 50;
+
+                const anim = conf.animate([
+                    { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 1000 + Math.random() * 500,
+                    easing: 'cubic-bezier(0, .9, .57, 1)'
+                });
+
+                anim.onfinish = () => conf.remove();
+            }
+        }
+    </script>
+</body>
+
+</html>
