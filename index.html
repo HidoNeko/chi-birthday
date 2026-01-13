@@ -356,6 +356,9 @@
                 // Pause video and fade out
                 video.style.opacity = '0';
                 setTimeout(() => video.pause(), 1000); // Pause after fade out
+
+                // Reset card to default state
+                document.querySelector('.card').classList.remove('flipped');
             } else {
                 container.classList.remove('close');
                 container.classList.add('open');
